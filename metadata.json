@@ -1,0 +1,6 @@
+{
+  "name": "معلم‌یار هوشمند",
+  "description": "دستیار هوشمند و تخصصی معلمان فارسی‌زبان برای نگارش طرح درس روزانه، طراحی سؤالات امتحانی با پاسخنامه و خلاصه‌سازی دروس",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
