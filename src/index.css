@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+/* In screen mode, always hide the printable area completely */
+@media screen {
+  #moallemyar-printable-area {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+
+  /* Global print resets */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide everything by default when printing */
+  html, body {
+    background-color: #ffffff !important;
+  }
+
+  /* Target all UI elements that should NOT be printed */
+  nav, 
+  footer:not(.exam-footer), 
+  button, 
+  .no-print,
+  .bg-slate-900,
+  [role="dialog"],
+  .fixed,
+  .absolute:not(#moallemyar-printable-area *),
+  input,
+  select,
+  textarea,
+  .shadow-xs,
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Ensure the printable area is visible if present in main DOM */
+  #moallemyar-printable-area {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #moallemyar-printable-area * {
+    visibility: visible !important;
+  }
+
+  /* Card styling for print */
+  .print-card {
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    break-inside: auto;
+  }
+
+  /* Avoid breaking important sections across pages */
+  .question-item, 
+  .tf-row, 
+  table.lesson-table tr, 
+  .exam-header-box, 
+  .section-title,
+  .bg-amber-50,
+  .bg-emerald-50,
+  .bg-sky-50,
+  .bg-blue-50,
+  .bg-purple-50 {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Force RTL */
+  body {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+}
+
