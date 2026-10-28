@@ -105,46 +105,6 @@ async function callGemini(
   }
 
   throw translateError(lastError);
-}{
-  const genAI = new GoogleGenAI(apiKey);
-  const modelName = preferredModel || options.model || 'gemini-3.8-flash';
-  const model = genAI.getGenerativeModel({ 
-    model: modelName,
-    systemInstruction: options.systemInstruction,
-    generationConfig: {
-      temperature: options.temperature ?? 0.7,
-      responseMimeType: options.responseMimeType as any,
-    }
-  });
-
-  const parts: any[] = [{ text: options.prompt }];
-  if (options.image) {
-    parts.unshift({
-      inlineData: {
-        data: options.image.data,
-        mimeType: options.image.mimeType
-      }
-    });
-  }
-
-  // Retry logic for Gemini
-  let lastError: any = null;
-  for (let attempt = 0; attempt <= 2; attempt++) {
-    try {
-      if (attempt > 0) {
-        await new Promise((resolve) => setTimeout(resolve, attempt * 1000));
-      }
-      const result = await model.generateContent({ contents: [{ role: 'user', parts }] });
-      const response = await result.response;
-      return response.text();
-    } catch (err: any) {
-      lastError = err;
-      const msg = err?.message || '';
-      if (msg.includes('400') || msg.includes('INVALID_ARGUMENT')) break;
-      console.warn(`[Gemini Attempt ${attempt + 1}] failed:`, msg);
-    }
-  }
-  throw translateError(lastError);
 }
 
 async function callOpenAi(options: GenerateOptions, apiKey: string, baseUrl?: string, preferredModel?: string): Promise<string> {
