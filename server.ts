@@ -51,7 +51,61 @@ async function generateContent(options: GenerateOptions): Promise<string> {
   }
 }
 
-async function callGemini(options: GenerateOptions, apiKey: string, preferredModel?: string): Promise<string> {
+async function callGemini(
+  options: GenerateOptions,
+  apiKey: string,
+  preferredModel?: string
+): Promise<string> {
+  const ai = new GoogleGenAI({ apiKey });
+  const modelName =
+    preferredModel || options.model || 'gemini-3.8-flash';
+
+  const parts: any[] = [{ text: options.prompt }];
+
+  if (options.image) {
+    parts.unshift({
+      inlineData: {
+        data: options.image.data,
+        mimeType: options.image.mimeType,
+      },
+    });
+  }
+
+  let lastError: any = null;
+
+  for (let attempt = 0; attempt <= 2; attempt++) {
+    try {
+      if (attempt > 0) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, attempt * 1000)
+        );
+      }
+
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: [{ role: 'user', parts }],
+        config: {
+          systemInstruction: options.systemInstruction,
+          temperature: options.temperature ?? 0.7,
+          responseMimeType: options.responseMimeType as any,
+        },
+      });
+
+      return response.text ?? '';
+    } catch (err: any) {
+      lastError = err;
+      const msg = err?.message || '';
+
+      if (msg.includes('400') || msg.includes('INVALID_ARGUMENT')) {
+        break;
+      }
+
+      console.warn(`[Gemini Attempt ${attempt + 1}] failed:`, msg);
+    }
+  }
+
+  throw translateError(lastError);
+}{
   const genAI = new GoogleGenAI(apiKey);
   const modelName = preferredModel || options.model || 'gemini-3.8-flash';
   const model = genAI.getGenerativeModel({ 
